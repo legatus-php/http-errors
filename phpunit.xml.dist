@@ -9,7 +9,7 @@
          verbose="true"
 >
     <testsuites>
-        <testsuite name="Espresso Middleware Queue Test Suite">
+        <testsuite name="Legatus Http Errors Test Suite">
             <directory>tests</directory>
         </testsuite>
     </testsuites>
