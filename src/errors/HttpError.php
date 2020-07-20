@@ -9,7 +9,7 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Legatus\Http\Errors;
+namespace Legatus\Http;
 
 use InvalidArgumentException;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -21,23 +21,29 @@ use Throwable;
  *
  * The de-facto exception for your PSR-7 HTTP layer
  */
-class HttpError extends RuntimeException
+abstract class HttpError extends RuntimeException
 {
     private Request $request;
+    private array $meta;
+
+    /**
+     * @return int
+     */
+    abstract public static function statusCode(): int;
 
     /**
      * HttpError constructor.
      *
      * @param Request        $request
-     * @param int            $statusCode
      * @param string         $message
      * @param Throwable|null $previous
      */
-    public function __construct(Request $request, int $statusCode, string $message = null, Throwable $previous = null)
+    public function __construct(Request $request, string $message = null, Throwable $previous = null)
     {
         $message = $message ?? $this->createStandardMessageFrom($request);
-        parent::__construct($message, $statusCode, $previous);
+        parent::__construct($message, static::statusCode(), $previous);
         $this->request = $request;
+        $this->meta = [];
         $this->guardCode();
     }
 
@@ -47,6 +53,48 @@ class HttpError extends RuntimeException
     public function getRequest(): Request
     {
         return $this->request;
+    }
+
+    /**
+     * @return array
+     */
+    public function getMeta(): array
+    {
+        return $this->meta;
+    }
+
+    /**
+     * @param string $key
+     *
+     * @return bool
+     */
+    public function hasMeta(string $key): bool
+    {
+        return array_key_exists($key, $this->meta);
+    }
+
+    /**
+     * @param string $key
+     * @param $value
+     *
+     * @return HttpError
+     */
+    public function withMeta(string $key, $value): HttpError
+    {
+        $clone = clone $this;
+        $clone->meta[$key] = $value;
+
+        return $clone;
+    }
+
+    /**
+     * @param string $key
+     *
+     * @return mixed|null
+     */
+    public function readMeta(string $key)
+    {
+        return $this->meta[$key] ?? null;
     }
 
     /**
@@ -100,6 +148,6 @@ class HttpError extends RuntimeException
         return [
             'status' => $this->code,
             'message' => $this->message,
-        ];
+        ] + $this->meta;
     }
 }

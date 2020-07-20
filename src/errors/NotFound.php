@@ -9,18 +9,20 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Legatus\Http\Errors;
-
-use Psr\Http\Message\ServerRequestInterface as Request;
-use Throwable;
+namespace Legatus\Http;
 
 /**
  * Class NotFoundHttpError.
  */
-class NotFoundHttpError extends HttpError
+class NotFound extends HttpError
 {
-    public function __construct(Request $request, string $message = null, Throwable $previous = null)
+    private const CODE = 404;
+
+    /**
+     * @return int
+     */
+    public static function statusCode(): int
     {
-        parent::__construct($request, ErrorCodes::NOT_FOUND, $message, $previous);
+        return self::CODE;
     }
 }

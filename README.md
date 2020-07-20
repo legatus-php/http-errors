@@ -16,7 +16,6 @@ composer require legatus/http-errors
 
 ```php
 <?php
-
 declare(strict_types=1);
 
 use Psr\Http\Message\ResponseInterface as Response;
@@ -33,10 +32,7 @@ class SomeAuthorizationMiddleware implements MiddlewareInterface
     {
         if (!$this->isAuthorized($request)) {
             // Throw the exception and handle it in an upstream middleware
-            throw Legatus\Http\Errors\make_for($request)->unauthorized();
-
-            // You can also use the traditional form:
-            // throw new Legatus\Http\Errors\UnauthorizedHttpError($request);
+            throw new Legatus\Http\Unauthorized($request);
         }
 
         return $next->handle($request);

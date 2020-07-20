@@ -9,23 +9,33 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Legatus\Http\Errors;
+namespace Legatus\Http;
 
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Throwable;
 
 /**
- * Class MethodNotAllowedHttpError.
+ * Class MethodNotAllowed.
  */
-class MethodNotAllowedHttpError extends HttpError
+class MethodNotAllowed extends HttpError
 {
+    private const CODE = 405;
+
     /**
      * @var string[]
      */
     private array $allowedMethods;
 
     /**
-     * MethodNotAllowedHttpError constructor.
+     * @return int
+     */
+    public static function statusCode(): int
+    {
+        return self::CODE;
+    }
+
+    /**
+     * MethodNotAllowed constructor.
      *
      * @param Request        $request
      * @param string[]       $allowedMethods
@@ -34,7 +44,7 @@ class MethodNotAllowedHttpError extends HttpError
      */
     public function __construct(Request $request, array $allowedMethods, string $message = null, Throwable $previous = null)
     {
-        parent::__construct($request, ErrorCodes::METHOD_NOT_ALLOWED, $message, $previous);
+        parent::__construct($request, $message, $previous);
         $this->allowedMethods = $allowedMethods;
     }
 
