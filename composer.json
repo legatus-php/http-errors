@@ -28,17 +28,20 @@
         "phpunit/phpunit": "^9.0",
         "friendsofphp/php-cs-fixer": "^2.16",
         "vimeo/psalm": "^3.7",
-        "psr/http-server-middleware": "^1.0"
+        "psr/http-server-middleware": "^1.0",
+        "infection/infection": "^0.16.4"
     },
     "scripts": {
         "lint": "php-cs-fixer fix --ansi",
         "ci:style": "php-cs-fixer fix --dry-run -vvv --ansi",
         "ci:test": "phpunit --testdox --coverage-text",
         "ci:types": "psalm",
+        "ci:infection": "infection",
         "ci": [
             "@ci:types",
-            "@ci:test",
-            "@ci:style"
+            "@ci:unit",
+            "@ci:style",
+            "@ci:infection"
         ]
     }
 }
