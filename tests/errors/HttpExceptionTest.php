@@ -103,4 +103,44 @@ class HttpExceptionTest extends TestCase
         $e = new ServiceUnavailable($requestMock);
         self::assertEquals(503, $e->getCode());
     }
+
+    public function testItSetsAndGetsMetadata(): void
+    {
+        $uriMock = $this->createMock(UriInterface::class);
+        $requestMock = $this->createMock(ServerRequestInterface::class);
+
+        $requestMock->expects(self::atLeastOnce())
+            ->method('getUri')
+            ->willReturn($uriMock);
+        $requestMock->expects(self::atLeastOnce())
+            ->method('getMethod')
+            ->willReturn('GET');
+        $uriMock->expects(self::atLeastOnce())
+            ->method('getPath')
+            ->willReturn('/some/path');
+
+        $e = new TooManyRequests($requestMock);
+        $e->addMeta('wait', 3600);
+        self::assertSame(['wait' => 3600], $e->getMeta());
+        self::assertSame(3600, $e->readMeta('wait'));
+    }
+
+    public function testItThrowsExceptionOnInvalidStatusCode(): void
+    {
+        $uriMock = $this->createMock(UriInterface::class);
+        $requestMock = $this->createMock(ServerRequestInterface::class);
+
+        $requestMock->expects(self::atLeastOnce())
+            ->method('getUri')
+            ->willReturn($uriMock);
+        $requestMock->expects(self::atLeastOnce())
+            ->method('getMethod')
+            ->willReturn('GET');
+        $uriMock->expects(self::atLeastOnce())
+            ->method('getPath')
+            ->willReturn('/some/path');
+
+        $this->expectException(\InvalidArgumentException::class);
+        $e = new NonExistent($requestMock);
+    }
 }

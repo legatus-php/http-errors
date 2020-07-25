@@ -79,12 +79,11 @@ abstract class HttpError extends RuntimeException
      *
      * @return HttpError
      */
-    public function withMeta(string $key, $value): HttpError
+    public function addMeta(string $key, $value): HttpError
     {
-        $clone = clone $this;
-        $clone->meta[$key] = $value;
+        $this->meta[$key] = $value;
 
-        return $clone;
+        return $this;
     }
 
     /**
